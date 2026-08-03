@@ -35,27 +35,46 @@ processor = AutoProcessor.from_pretrained(MODEL_NAME)
 # Prompt
 # -----------------------------
 prompt = f"""
-You are an expert in autonomous driving and ego-vehicle trajectory analysis.
+You are an expert in autonomous driving, vehicle dynamics, and ego-vehicle trajectory analysis.
 
 The video duration is {duration:.2f} seconds.
 
-Analyze the entire video from beginning to end.
+Your task is to analyze the ego vehicle's driving direction throughout the entire video.
 
-Describe only the driving direction of the ego vehicle.
+Analyze the video from beginning to end and produce a dense temporal description.
 
 Requirements:
 - Cover the entire video.
-- Split the video whenever the driving direction changes.
-- Create a new event even for small direction changes.
-- Do not merge multiple direction changes into one event.
-- The first event must start at 0.0 seconds.
-- The last event must end at {duration:.2f} seconds.
-- Events must be continuous without gaps or overlaps.
+- Divide the video into chronological temporal events.
+- Create a new event whenever the driving direction changes, even slightly.
+- Prefer more events rather than fewer.
+- Do not merge multiple direction changes into a single event.
+- Continue generating events until the end of the video.
 
-Use only the following direction labels:
+Pay attention to:
+- gentle road curvature
+- steering corrections
+- entering a curve
+- exiting a curve
+- transitions between straight driving and turning
+- sustained left curves
+- sustained right curves
+- subtle changes in heading
+
+Use ONLY the following direction labels:
 - straight
 - left curve
 - right curve
+
+If the vehicle follows a left-curving road, output "left curve".
+If the vehicle follows a right-curving road, output "right curve".
+Otherwise, output "straight".
+
+Timestamp requirements:
+- The first event must start at 0.0 seconds.
+- The final event must end at {duration:.2f} seconds.
+- Every timestamp must lie between 0.0 and {duration:.2f} seconds.
+- Consecutive events must be continuous with no gaps or overlaps.
 
 Output format:
 
@@ -65,9 +84,11 @@ Direction:
 (straight / left curve / right curve)
 
 Explanation:
-Briefly describe the ego vehicle's driving direction during this interval.
+Briefly describe how the driving direction changes during this interval.
 
-Generate as many events as necessary until the end of the video.
+Generate as many events as necessary to completely describe the driving direction.
+Never stop early.
+Do not summarize long intervals into a single event if the direction changes.
 """
 
 messages = [
