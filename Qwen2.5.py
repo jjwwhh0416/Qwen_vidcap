@@ -16,6 +16,10 @@ model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     device_map="auto"
 )
 
+print(len(vr))
+print(vr.get_avg_fps())
+print(duration)
+
 processor = AutoProcessor.from_pretrained(MODEL_NAME)
 
 messages = [
@@ -112,5 +116,7 @@ output_text = processor.batch_decode(
 )
 
 print(inputs["pixel_values_videos"].shape)
+print(inputs["video_grid_thw"])
+print(video_inputs)
 
 print(output_text[0])
