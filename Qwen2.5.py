@@ -1,4 +1,4 @@
-from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+from transformers import Qwen3VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 from decord import VideoReader
 
@@ -23,7 +23,7 @@ print("=" * 50)
 # -----------------------------
 MODEL_NAME = "Qwen/Qwen3-VL-8B-Instruct"
 
-model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+model = Qwen3VLForConditionalGeneration.from_pretrained(
     MODEL_NAME,
     torch_dtype="auto",
     device_map="auto",
