@@ -35,77 +35,60 @@ processor = AutoProcessor.from_pretrained(MODEL_NAME)
 # Prompt
 # -----------------------------
 prompt = f"""
-You are an expert in autonomous driving, vehicle dynamics, and ego-vehicle motion analysis.
+You are an expert in autonomous driving and ego-vehicle trajectory analysis.
 
 The video duration is {duration:.2f} seconds.
 
-Your task is to produce a dense temporal description of the ego vehicle's motion over the ENTIRE video.
+Your task is to produce a dense temporal description of the ego vehicle's driving direction over the ENTIRE video.
 
 Analyze ONLY the ego vehicle.
-Ignore surrounding vehicles unless they directly cause the ego vehicle to change its motion.
+Ignore all surrounding vehicles, pedestrians, traffic lights, and road objects.
+
+Focus ONLY on the direction of the ego vehicle's movement.
 
 Requirements:
-- Analyze the video from beginning to end.
-- Cover the ENTIRE video without skipping any interval.
+- Analyze the entire video from beginning to end.
+- Cover the entire duration without skipping any interval.
 - Divide the video into as many temporal events as necessary.
-- Prefer MORE events rather than fewer events.
-- Do NOT merge multiple driving behaviors into a single event.
-- Every noticeable change in the ego vehicle's motion should start a new event.
-- Even subtle changes should be reported.
+- Create a new event whenever the driving direction changes, even slightly.
+- Prefer more events rather than fewer.
+- Do NOT summarize long periods.
 
-Treat the following as separate events whenever they occur:
-- slight left steering
-- slight right steering
-- steering correction
-- beginning of a turn
-- middle of a turn
-- end of a turn
-- entering a curve
-- exiting a curve
-- lane centering adjustment
-- lane change
-- acceleration
-- gradual acceleration
-- strong acceleration
-- deceleration
-- gradual deceleration
-- braking
-- stop
-- waiting
-- parked
-- starting from rest
-- maintaining constant speed
+The only valid motion labels are:
+- straight
+- slight left curve
+- slight right curve
+- left curve
+- right curve
 
-Pay special attention to:
-- small steering corrections
-- gentle curves
-- slight lane-centering adjustments
-- subtle speed changes
-- transitions between acceleration and constant speed
-- transitions between steering directions
+Guidelines:
+- Output "straight" whenever the vehicle is moving approximately straight.
+- Output "slight left curve" or "slight right curve" for gentle steering.
+- Output "left curve" or "right curve" for obvious turns or sustained curves.
+- Even small steering corrections should be reported as separate events.
+- Ignore acceleration, deceleration, braking, stopping, lane changes, and speed changes.
+- Ignore the reason for the maneuver.
+- Describe ONLY the vehicle's direction of travel.
 
-Do NOT summarize long periods of driving.
-Instead, split them whenever the vehicle's steering angle, speed, or trajectory changes, even slightly.
-
-Requirements for timestamps:
+Timestamp requirements:
 - The first event MUST start at 0.0 seconds.
 - The final event MUST end at {duration:.2f} seconds.
 - Every timestamp MUST be between 0.0 and {duration:.2f} seconds.
 - Consecutive events must be continuous without gaps or overlaps.
 
-For each event, output:
+Output format:
 
 [start_time - end_time]
 
-Motion:
-(A concise motion label.)
+Direction:
+(straight / slight left curve / slight right curve / left curve / right curve)
 
 Explanation:
-(A detailed description of exactly how the ego vehicle moves during this interval and why this interval is different from the previous one.)
+Briefly describe only how the driving direction changes during this interval.
 
-Generate as many events as necessary to completely describe the vehicle's motion.
+Generate as many events as necessary until the end of the video.
 Never stop early.
-Never summarize the entire video into only a few events.
+Never summarize multiple direction changes into one event.
 """
 
 messages = [
