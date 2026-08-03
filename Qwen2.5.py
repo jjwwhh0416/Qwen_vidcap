@@ -21,7 +21,7 @@ print("=" * 50)
 # -----------------------------
 # Load model
 # -----------------------------
-MODEL_NAME = "Qwen/Qwen3-VL-8B-Instruct"
+MODEL_NAME = "Qwen/Qwen3-VL-32B-Instruct"
 
 model = Qwen3VLForConditionalGeneration.from_pretrained(
     MODEL_NAME,
