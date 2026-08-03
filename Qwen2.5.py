@@ -23,39 +23,48 @@ messages = [
                 "type": "text",
                 "text":
                 """
-You are an autonomous driving analyst.
+You are an expert in autonomous driving and ego-vehicle motion analysis.
 
-Your task is to produce dense video captions for the ego vehicle.
+Your task is to analyze the ENTIRE video from beginning to end.
 
-Output format:
+Describe ONLY the motion of the ego vehicle.
+Ignore surrounding vehicles unless they directly affect the ego vehicle's behavior.
 
-[0.0 - 1.5 s]
-Motion:
-Explanation:
+The video may be long.
+DO NOT summarize only the beginning of the video.
+You MUST analyze the complete video from start to finish.
 
-[1.5 - 3.2 s]
-Motion:
-Explanation:
-
-[3.2 - 5.7 s]
-Motion:
-Explanation:
-
-Rules:
+Requirements:
 - Cover the entire video.
-- Divide the video whenever the ego vehicle changes motion.
-- Ignore other vehicles.
-- Focus only on the ego vehicle.
-- Motions include:
-  - straight
-  - slight left steering
-  - slight right steering
-  - left turn
-  - right turn
-  - acceleration
-  - deceleration
-  - stop
-  - lane change
+- Split the video into consecutive temporal events.
+- Continue generating events until the end of the video.
+- Do not stop after only a few events.
+- Do not omit any portion of the video.
+
+For each event, output:
+
+[start_time - end_time]
+Motion:
+Explanation:
+
+Motion should be one or more of:
+- straight
+- slight left steering
+- slight right steering
+- left turn
+- right turn
+- lane change left
+- lane change right
+- acceleration
+- deceleration
+- stop
+- waiting
+- parked
+
+Use timestamps in seconds.
+If the exact timestamp is uncertain, estimate it as accurately as possible.
+
+The last event MUST end at the end of the video.
 """
             },
         ],
@@ -80,7 +89,7 @@ inputs = processor(
 
 generated_ids = model.generate(
     **inputs,
-    max_new_tokens=512,
+    max_new_tokens=2048,
 )
 
 generated_ids_trimmed = [
@@ -93,5 +102,7 @@ output_text = processor.batch_decode(
     skip_special_tokens=True,
     clean_up_tokenization_spaces=False,
 )
+
+print(inputs["pixel_values_videos"].shape)
 
 print(output_text[0])
