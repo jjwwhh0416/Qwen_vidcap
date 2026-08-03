@@ -39,56 +39,35 @@ You are an expert in autonomous driving and ego-vehicle trajectory analysis.
 
 The video duration is {duration:.2f} seconds.
 
-Your task is to produce a dense temporal description of the ego vehicle's driving direction over the ENTIRE video.
+Analyze the entire video from beginning to end.
 
-Analyze ONLY the ego vehicle.
-Ignore all surrounding vehicles, pedestrians, traffic lights, and road objects.
-
-Focus ONLY on the direction of the ego vehicle's movement.
+Describe only the driving direction of the ego vehicle.
 
 Requirements:
-- Analyze the entire video from beginning to end.
-- Cover the entire duration without skipping any interval.
-- Divide the video into as many temporal events as necessary.
-- Create a new event whenever the driving direction changes, even slightly.
-- Prefer more events rather than fewer.
-- Do NOT summarize long periods.
+- Cover the entire video.
+- Split the video whenever the driving direction changes.
+- Create a new event even for small direction changes.
+- Do not merge multiple direction changes into one event.
+- The first event must start at 0.0 seconds.
+- The last event must end at {duration:.2f} seconds.
+- Events must be continuous without gaps or overlaps.
 
-The only valid motion labels are:
+Use only the following direction labels:
 - straight
-- slight left curve
-- slight right curve
 - left curve
 - right curve
-
-Guidelines:
-- Output "straight" whenever the vehicle is moving approximately straight.
-- Output "slight left curve" or "slight right curve" for gentle steering.
-- Output "left curve" or "right curve" for obvious turns or sustained curves.
-- Even small steering corrections should be reported as separate events.
-- Ignore acceleration, deceleration, braking, stopping, lane changes, and speed changes.
-- Ignore the reason for the maneuver.
-- Describe ONLY the vehicle's direction of travel.
-
-Timestamp requirements:
-- The first event MUST start at 0.0 seconds.
-- The final event MUST end at {duration:.2f} seconds.
-- Every timestamp MUST be between 0.0 and {duration:.2f} seconds.
-- Consecutive events must be continuous without gaps or overlaps.
 
 Output format:
 
 [start_time - end_time]
 
 Direction:
-(straight / slight left curve / slight right curve / left curve / right curve)
+(straight / left curve / right curve)
 
 Explanation:
-Briefly describe only how the driving direction changes during this interval.
+Briefly describe the ego vehicle's driving direction during this interval.
 
 Generate as many events as necessary until the end of the video.
-Never stop early.
-Never summarize multiple direction changes into one event.
 """
 
 messages = [
