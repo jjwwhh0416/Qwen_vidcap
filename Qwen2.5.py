@@ -1,6 +1,13 @@
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 
+from decord import VideoReader
+
+video_path = "scene001.mp4"
+
+vr = VideoReader(video_path)
+duration = len(vr) / 12
+
 MODEL_NAME = "Qwen/Qwen2.5-VL-7B-Instruct"
 
 model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
@@ -22,9 +29,10 @@ messages = [
             {
                 "type": "text",
                 "text":
-                """
+                f"""
 You are an expert in autonomous driving and ego-vehicle motion analysis.
 
+The video duration is {duration:.2f} seconds.
 Your task is to analyze the ENTIRE video from beginning to end.
 
 Describe ONLY the motion of the ego vehicle.
