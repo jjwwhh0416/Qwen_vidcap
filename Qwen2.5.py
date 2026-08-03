@@ -23,20 +23,39 @@ messages = [
                 "type": "text",
                 "text":
                 """
-You are analyzing the motion of the ego vehicle.
+You are an autonomous driving analyst.
 
-Ignore all surrounding vehicles.
+Your task is to produce dense video captions for the ego vehicle.
 
-Describe ONLY the ego vehicle's motion.
+Output format:
 
-Focus on:
-- steering
-- acceleration
-- deceleration
-- stopping
-- lane changes
+[0.0 - 1.5 s]
+Motion:
+Explanation:
 
-Output chronologically.
+[1.5 - 3.2 s]
+Motion:
+Explanation:
+
+[3.2 - 5.7 s]
+Motion:
+Explanation:
+
+Rules:
+- Cover the entire video.
+- Divide the video whenever the ego vehicle changes motion.
+- Ignore other vehicles.
+- Focus only on the ego vehicle.
+- Motions include:
+  - straight
+  - slight left steering
+  - slight right steering
+  - left turn
+  - right turn
+  - acceleration
+  - deceleration
+  - stop
+  - lane change
 """
             },
         ],
